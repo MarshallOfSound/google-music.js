@@ -203,23 +203,24 @@ Retrieve the URL of the current song for sharing
 Hooks are currently defined via defining and overriding on `window.GoogleMusicApp`.
 
 ```js
-window.GoogleMusicApp.notifySong = function (title, artist, album, art, duration) {
+window.GoogleMusicApp.notifySong = function (song) {
 };
 ```
 
-#### `notifySong(title, artist, album, art, duration)`
+#### `notifySong(song)`
 Triggers when a song changes
 
 ```js
-window.GoogleMusicApp.notifySong = function (title, artist, album, art, duration) {
+window.GoogleMusicApp.notifySong = function (song) {
 };
 ```
 
-- title `String` - Name of the song
-- artist `String` - Artist of the song
-- album `String` - Album of the song
-- art `String` - URL for album art of the song
-- duration `Number` - Seconds that the track will last for
+- song `Object` - Container for song info
+    - title `String` - Name of the song
+    - artist `String` - Artist of the song
+    - album `String` - Album of the song
+    - art `String` - URL for album art of the song
+    - duration `Number` - Seconds that the track will last for
 
 #### `shuffleChanged(mode)`
 Triggers when shuffle is toggled
