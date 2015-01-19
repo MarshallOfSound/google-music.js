@@ -262,12 +262,13 @@ window.GoogleMusicApp.playbackChanged = function (mode) {
 Triggers when playback shifts
 
 ```js
-window.GoogleMusicApp.playbackTimeChanged = function (currentTime, totalTime) {
+window.GoogleMusicApp.playbackTimeChanged = function (playbackInfo) {
 };
 ```
 
-- currentTime `Number` - Milliseconds of how far a track has progressed
-- totalTime `Number` - Milliseconds of how long a track is
+- playbackInfo `Object` - Container for playback info
+    - currentTime `Number` - Milliseconds of how far a track has progressed
+    - totalTime `Number` - Milliseconds of how long a track is
 
 #### `ratingChanged(rating)`
 Triggers when the current song is rated
