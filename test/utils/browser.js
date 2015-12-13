@@ -2,21 +2,14 @@
 var assert = require('assert');
 var fs = require('fs');
 var functionToString = require('function-to-string');
-var async = require('async');
 var wd = require('wd');
-
-// Resolve cookies with helpful messaging
-var cookiesJson;
-try {
-  cookiesJson = fs.readFileSync(__dirname + '/../cookies.json');
-} catch (err) {
-  throw new Error('Could not read `test/cookies.json`. Please make sure it exists. ' +
-      'If it doesn\'t, follow the steps in https://github.com/twolfson/google-music.js#testing');
-}
-var cookies = JSON.parse(cookiesJson);
 
 // Resolve the compiled script
 var script = fs.readFileSync(__dirname + '/../../dist/google-music.js', 'utf8');
+
+// Google Login Info you have to fill this in
+var username = '';
+var password = '';
 
 // Define helpers for interacting with the browser
 exports.openMusic = function (options) {
@@ -33,23 +26,57 @@ exports.openMusic = function (options) {
     global.browser = this.browser;
   });
   before(function openBrowser (done) {
-    this.browser.init({browserName: 'chrome'}, done);
+    var that = this;
+    this.browser.init({browserName: 'firefox'}, function () {
+      that.browser.setAsyncScriptTimeout(30000, done);
+    });
   });
   before(function navigateToMusicBeforeLogin (done) {
     this.browser.get(url, done);
   });
   before(function handleLoginViaCookies (done) {
     var browser = this.browser;
-    async.forEach(cookies, function setCookies (cookie, cb) {
-      // If the cookie is not for .google.com, skip it
-      // DEV: As discovered by Burp suite's repeater, we only need `SID`, `HSID`, `SSID` but this is simpler
-      if (cookie.domain !== '.google.com') {
-        process.nextTick(cb);
-      // Otherwise, set it
-      } else {
-        browser.setCookie(cookie, cb);
-      }
-    }, done);
+    browser.elementByCssSelector('[data-action=signin]', function (err, el) {
+      if (err) { done(err); }
+
+      el.click(function (err) {
+        if (err) { done(err); }
+
+        browser.elementById('Email', function (err, el) {
+          if (err) { done(err); }
+
+          var emailSetCondition = 'document.getElementById("Email").value == "' + username + '"';
+          browser.execute('document.getElementById("Email").value = "' + username + '"');
+          browser.waitForConditionInBrowser(emailSetCondition, function (err) {
+            if (err) { done(err); }
+
+            browser.elementById('next', function (err, el) {
+              if (err) { done(err); }
+
+              el.click(function (err) {
+                if (err) { done(err); }
+
+                browser.waitForConditionInBrowser('document.getElementById("Passwd") != null', function () {
+                  var passwordSetCondition = 'document.getElementById("Passwd").value == \'' + password + '\'';
+
+                  browser.execute('document.getElementById("Passwd").value = "' + password + '"');
+                  browser.waitForConditionInBrowser(passwordSetCondition, function () {
+                    browser.elementById('signIn', function (err, el) {
+                      el.click(function (err) {
+                        if (err) { done(err); }
+
+                        var doneLoginCondition = 'window.location.href.indexOf("https://play.google.com/music") === 0';
+                        browser.waitForConditionInBrowser(doneLoginCondition, done);
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          });
+        });
+      });
+    });
   });
   before(function navigateToMusicAfterLogin (done) {
     this.browser.get(url, done);
