@@ -8,8 +8,11 @@ var wd = require('wd');
 var script = fs.readFileSync(__dirname + '/../../dist/google-music.js', 'utf8');
 
 // Google Login Info you have to fill this in
-var username = '';
-var password = '';
+var username = process.env.GPM_USER;
+var password = process.env.GPM_PWD;
+if (!username || !password) {
+  throw "You need to define your GPM Username and Password";
+}
 
 // Define helpers for interacting with the browser
 exports.openMusic = function (options) {
