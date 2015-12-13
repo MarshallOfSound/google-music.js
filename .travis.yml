@@ -12,3 +12,5 @@ before_script:
   - selenium-standalone install
   - selenium-standalone start > /dev/null 2>&1 &
   - sleep 3
+before_install:
+	- "/sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1280x1024x16"

@@ -51,7 +51,6 @@ exports.openMusic = function (options) {
           var emailSetCondition = 'document.getElementById("Email").value == "' + username + '"';
           browser.execute('document.getElementById("Email").value = "' + username + '"');
           browser.waitForConditionInBrowser(emailSetCondition, function (err) {
-            if (err) { done(err); }
 
             browser.elementById('next', function (err, el) {
               if (err) { done(err); }
