@@ -76,7 +76,8 @@ exports.openMusic = function (options) {
                         el.click(function (err) {
                           if (err) { done(err); }
 
-                          var doneLoginCondition = 'window.location.href.indexOf("https://play.google.com/music") === 0';
+                          var doneLoginCondition =
+                            'window.location.href.indexOf("https://play.google.com/music") === 0';
                           browser.waitForConditionInBrowser(doneLoginCondition, function () { done(); });
                         });
                       });
