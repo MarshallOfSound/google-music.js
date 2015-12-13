@@ -58,25 +58,27 @@ exports.openMusic = function (options) {
           if (err) { done(err); }
 
           var emailSetCondition = 'document.getElementById("Email").value == "' + username + '"';
-          browser.execute('document.getElementById("Email").value = "' + username + '"');
-          browser.waitForConditionInBrowser(emailSetCondition, function (err) {
-            browser.elementById('next', function (err, el) {
-              if (err) { done(err); }
-
-              el.click(function (err) {
+          browser.waitForConditionInBrowser('document.getElementById("Email") != null', function () {
+            browser.execute('document.getElementById("Email").value = "' + username + '"');
+            browser.waitForConditionInBrowser(emailSetCondition, function (err) {
+              browser.elementById('next', function (err, el) {
                 if (err) { done(err); }
 
-                browser.waitForConditionInBrowser('document.getElementById("Passwd") != null', function () {
-                  var passwordSetCondition = 'document.getElementById("Passwd").value == \'' + password + '\'';
+                el.click(function (err) {
+                  if (err) { done(err); }
 
-                  browser.execute('document.getElementById("Passwd").value = "' + password + '"');
-                  browser.waitForConditionInBrowser(passwordSetCondition, function () {
-                    browser.elementById('signIn', function (err, el) {
-                      el.click(function (err) {
-                        if (err) { done(err); }
+                  browser.waitForConditionInBrowser('document.getElementById("Passwd") != null', function () {
+                    var passwordSetCondition = 'document.getElementById("Passwd").value == \'' + password + '\'';
 
-                        var doneLoginCondition = 'window.location.href.indexOf("https://play.google.com/music") === 0';
-                        browser.waitForConditionInBrowser(doneLoginCondition, function () { done(); });
+                    browser.execute('document.getElementById("Passwd").value = "' + password + '"');
+                    browser.waitForConditionInBrowser(passwordSetCondition, function () {
+                      browser.elementById('signIn', function (err, el) {
+                        el.click(function (err) {
+                          if (err) { done(err); }
+
+                          var doneLoginCondition = 'window.location.href.indexOf("https://play.google.com/music") === 0';
+                          browser.waitForConditionInBrowser(doneLoginCondition, function () { done(); });
+                        });
                       });
                     });
                   });
