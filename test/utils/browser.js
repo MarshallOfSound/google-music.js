@@ -69,7 +69,7 @@ exports.openMusic = function (options) {
                         if (err) { done(err); }
 
                         var doneLoginCondition = 'window.location.href.indexOf("https://play.google.com/music") === 0';
-                        browser.waitForConditionInBrowser(doneLoginCondition, done);
+                        browser.waitForConditionInBrowser(doneLoginCondition, function () { done() });
                       });
                     });
                   });
