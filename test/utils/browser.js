@@ -10,8 +10,11 @@ var script = fs.readFileSync(__dirname + '/../../dist/google-music.js', 'utf8');
 // Google Login Info you have to fill this in
 var username = process.env.GPM_USER;
 var password = process.env.GPM_PWD;
+var BS_USER = process.env.BS_USER;
+var BS_KEY = process.env.BS_KEY;
+
 if (!username || !password) {
-  throw "You need to define your GPM Username and Password";
+  throw 'You need to define your GPM Username and Password';
 }
 
 // Define helpers for interacting with the browser
@@ -25,12 +28,17 @@ exports.openMusic = function (options) {
 
   // Execute many async steps
   before(function startBrowser () {
-    this.browser = wd.remote();
+    this.browser = wd.remote('hub.browserstack.com', 80);
     global.browser = this.browser;
   });
   before(function openBrowser (done) {
     var that = this;
-    this.browser.init({browserName: 'firefox'}, function () {
+    this.browser.init({
+      browserName: 'firefox',
+      name: 'Google Music Core Test Suite',
+      'browserstack.user': BS_USER,
+      'browserstack.key': BS_KEY
+    }, function () {
       that.browser.maximize();
       that.browser.setAsyncScriptTimeout(30000, done);
     });
@@ -52,7 +60,6 @@ exports.openMusic = function (options) {
           var emailSetCondition = 'document.getElementById("Email").value == "' + username + '"';
           browser.execute('document.getElementById("Email").value = "' + username + '"');
           browser.waitForConditionInBrowser(emailSetCondition, function (err) {
-
             browser.elementById('next', function (err, el) {
               if (err) { done(err); }
 
@@ -69,7 +76,7 @@ exports.openMusic = function (options) {
                         if (err) { done(err); }
 
                         var doneLoginCondition = 'window.location.href.indexOf("https://play.google.com/music") === 0';
-                        browser.waitForConditionInBrowser(doneLoginCondition, function () { done() });
+                        browser.waitForConditionInBrowser(doneLoginCondition, function () { done(); });
                       });
                     });
                   });
