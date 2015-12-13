@@ -31,6 +31,7 @@ exports.openMusic = function (options) {
   before(function openBrowser (done) {
     var that = this;
     this.browser.init({browserName: 'firefox'}, function () {
+      that.browser.maximize();
       that.browser.setAsyncScriptTimeout(30000, done);
     });
   });
