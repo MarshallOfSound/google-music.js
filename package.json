@@ -33,6 +33,7 @@
     "lint": "twolfson-style lint lib/ test/",
     "pretest": "npm run build",
     "test": "mocha --timeout 30000 --reporter dot && npm run lint",
+    "test-browserstack": "mocha --timeout 40000 --reporter dot && npm run lint",
     "webdriver-manager-start": "webdriver-manager start"
   },
   "dependencies": {

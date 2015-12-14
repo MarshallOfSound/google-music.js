@@ -10,6 +10,9 @@ var script = fs.readFileSync(__dirname + '/../../dist/google-music.js', 'utf8');
 // Google Login Info you have to fill this in
 var username = process.env.GPM_USER;
 var password = process.env.GPM_PWD;
+
+// These are the BrowserStack username and key vars that should NEVER be
+// pushed to remote.  They are stored in secure env vars on travis.ci
 var BS_USER = process.env.BS_USER;
 var BS_KEY = process.env.BS_KEY;
 
@@ -28,7 +31,13 @@ exports.openMusic = function (options) {
 
   // Execute many async steps
   before(function startBrowser () {
-    this.browser = wd.remote('hub.browserstack.com', 80);
+    this.browser = wd.remote();
+    process.argv.forEach(function eachArgument(arg) {
+      // Uniquely identify a browserstack build based on timeout
+      if (arg === '40000') {
+        this.browser = wd.remote('hub.browserstack.com', 80);
+      }
+    }.bind(this));
     global.browser = this.browser;
   });
   before(function openBrowser (done) {
