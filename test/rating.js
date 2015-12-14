@@ -49,7 +49,7 @@ describe('A track in Google Music', function () {
   describe('when \'thumbs up\'-ed', function () {
     browserUtils.execute(function resetRating () {
       // DEV: Warning this will skip to next track
-      window.googleMusic.rating.toggleThumbsDown();
+      window.googleMusic.rating.setRating('0');
     });
     browserUtils.execute(function thumbsUpTrack () {
       window.googleMusic.rating.toggleThumbsUp();

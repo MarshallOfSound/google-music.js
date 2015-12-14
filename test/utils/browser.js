@@ -104,7 +104,12 @@ exports.openMusic = function (options) {
     this.browser.get(url, done);
   });
   before(function loadGoogleMusicConstructor (done) {
-    this.browser.execute(script, done);
+    var playMusicReadyCondition = 'document.getElementById("material-vslider") !== null';
+    var that = this;
+
+    this.browser.waitForConditionInBrowser(playMusicReadyCondition, function () {
+      that.browser.execute(script, done);
+    });
   });
   exports.execute(function startGoogleMusicApi () {
     window.googleMusic = new window.GoogleMusic(window);
