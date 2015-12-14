@@ -32,7 +32,7 @@ exports.openMusic = function (options) {
   // Execute many async steps
   before(function startBrowser () {
     this.browser = wd.remote();
-    process.argv.forEach(function eachArgument(arg) {
+    process.argv.forEach(function eachArgument (arg) {
       // Uniquely identify a browserstack build based on timeout
       if (arg === '40000') {
         this.browser = wd.remote('hub.browserstack.com', 80);
