@@ -324,32 +324,31 @@ Explicit:
 Unchecked
 ```
 
-Once your Google account is registered and the music is uploaded, extract the cookies for our test suite via:
+Once your Google account is registered and the music is uploaded, set the following environment variables
 
 ```
-# Enter into the node REPL
-node
-
-# Inside of the REPL, dump our cookies
-var browser = require('wd').remote();
-browser.init({browserName: 'chrome'}, console.log);
-// Wait for browser window to open
-browser.get('https://play.google.com/music/listen', console.log);
-// Wait for redirect to accounts.google.com
-// Manually log in to page
-// When you are logged in to Google Music, dump the output of the following into `test/cookies.json`
-browser.allCookies(function (err, cookies) { fs.writeFileSync('test/cookies.json', JSON.stringify(cookies, null, 4), 'utf8'); });
+GPM_USER = {your_google_account_username}
+GPM_PWD = {your_google_account_password}
 ```
+
+This is so the test suite can automate the login process to test against Google Play Music
 
 Finally, we can run the test suite:
 
 ```bash
 # Start up a Selenium server
-npm run webdriver-manager-start &
+npm install -g selenium-standalone
+selenium-standalone install
+selenium-standalone start
 
 # Run our tests
 npm test
 ```
+
+##### Testing Note
+We have an automatic build setup on Travis CI that will run every day to catch changes made by Google as quick as possible.  These tests make use of Browserstack's services to remotely run Selenium tests, huge thanks to [Browserstack](https://www.browserstack.com) for the support of Open Source projects like this one!  
+
+![Browser Stack Logo](https://www.browserstack.com/images/mail/newsletter-bs-logo@2x.png)
 
 #### Debugging
 Finnicky tests can be debugged by a few methods
