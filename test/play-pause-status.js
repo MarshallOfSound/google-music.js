@@ -6,7 +6,9 @@ var browserMusicUtils = require('./utils/browser-music');
 
 // Start our tests
 describe('A new session with Google Music', function () {
-  browserUtils.openMusic();
+  browserUtils.openMusic({
+    testName: 'Play / Pause status test'
+  });
 
   // TODO: Currently there is no default state, fix that
   it.skip('is not playing any music', function () {
@@ -15,7 +17,7 @@ describe('A new session with Google Music', function () {
 
   describe('when we are playing music', function () {
     browserUtils.execute(function setupPlaybackWatcher () {
-      window.googleMusic.on('change:playback', function saveMode (mode) {
+      window.gmusic.on('change:playback', function saveMode (mode) {
         window.playbackMode = mode;
       });
     });

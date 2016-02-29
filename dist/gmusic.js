@@ -1,6 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 // Expose our constructor to the world
-window.GoogleMusic = require('./main');
+window.GMusic = require('./main');
 
 },{"./main":2}],2:[function(require,module,exports){
 // Load in dependencies
@@ -61,10 +61,10 @@ function bind(context, fn) {
 }
 
 // Define our constructor
-function GoogleMusic(win) {
+function GMusic(win) {
   // If win was not provided, complain
   if (!win) {
-    throw new Error('`win` was not provided to the `GoogleMusic` constructor');
+    throw new Error('`win` was not provided to the `GMusic` constructor');
   }
 
   // Inherit from EventEmitter
@@ -75,7 +75,7 @@ function GoogleMusic(win) {
   this.doc = win.document;
 
   // For each of the prototype sections
-  var proto = GoogleMusic._protoObj;
+  var proto = GMusic._protoObj;
   for (var protoKey in proto) {
     if (proto.hasOwnProperty(protoKey)) {
       // Define a key on our object
@@ -97,10 +97,10 @@ function GoogleMusic(win) {
   }
 }
 // Inherit from EventEmitter normally
-inherits(GoogleMusic, EventEmitter);
+inherits(GMusic, EventEmitter);
 
 // Define a "prototype" that will have magical invocation
-var proto = GoogleMusic._protoObj = {};
+var proto = GMusic._protoObj = {};
 
 // Create a volume API
 proto.volume = {
@@ -150,7 +150,7 @@ proto.volume = {
 };
 
 // Create a playback API and constants
-GoogleMusic.Playback = {
+GMusic.Playback = {
   // Playback states
   STOPPED: 0,
   PAUSED: 1,
@@ -200,11 +200,25 @@ proto.playback = {
   forward: function () { this.playback._forwardEl.click(); },
   rewind: function () { this.playback._rewindEl.click(); },
 
-  getShuffle: function () { return this.playback._shuffleEl.getAttribute('value'); },
+  getShuffle: function () {
+    var title = this.playback._shuffleEl.getAttribute('title').toLowerCase();
+    if (title.indexOf('off') !== -1) {
+      return GMusic.Playback.ALL_SHUFFLE;
+    } else {
+      return GMusic.Playback.NO_SHUFFLE;
+    }
+  },
   toggleShuffle: function () { this.playback._shuffleEl.click(); },
 
   getRepeat: function () {
-    return this.playback._repeatEl.getAttribute('value');
+    var title = this.playback._repeatEl.getAttribute('title').toLowerCase();
+    if (title.indexOf('repeat off') !== -1) {
+      return GMusic.Playback.NO_REPEAT;
+    } else if (title.indexOf('repeating all') !== -1) {
+      return GMusic.Playback.LIST_REPEAT;
+    } else {
+      return GMusic.Playback.SINGLE_REPEAT;
+    }
   },
 
   toggleRepeat: function (mode) {
@@ -279,6 +293,16 @@ proto.rating = {
     if (el && !this.rating._isElSelected(el)) {
       el.click();
     }
+  },
+
+  // Reset the rating
+  resetRating: function () {
+    var selector = SELECTORS.rating.thumbSelectorFormat.replace('{rating}', this.rating.getRating());
+    var el = this.doc.querySelector(selector);
+
+    if (el && this.rating._isElSelected(el)) {
+      el.click();
+    }
   }
 };
 
@@ -338,9 +362,9 @@ proto.hooks = {
             var durationStr = that.doc.getElementById(SELECTORS.playback.sliderId).getAttribute('aria-valuemax');
             var duration = parseInt(durationStr, 10);
 
-            title = (title) ? title.innerText : 'Unknown';
-            artist = (artist) ? artist.innerText : 'Unknown';
-            album = (album) ? album.innerText : 'Unknown';
+            title = (title) ? title.textContent : 'Unknown';
+            artist = (artist) ? artist.textContent : 'Unknown';
+            album = (album) ? album.textContent : 'Unknown';
             art = (art) ? art.src : null;
 
             // The art may be a protocol-relative URL, so normalize it to HTTPS
@@ -405,16 +429,16 @@ proto.hooks = {
               return;
             // Otherwise, we are stopped
             } else {
-              mode = GoogleMusic.Playback.STOPPED;
+              mode = GMusic.Playback.STOPPED;
             }
           // Otherwise (the play/pause button is enabled)
           } else {
             var playing = target.classList.contains(SELECTORS.playPause.playingClass);
             if (playing) {
-              mode = GoogleMusic.Playback.PLAYING;
+              mode = GMusic.Playback.PLAYING;
             // DEV: If this fails to catch stopped cases, then maybe move "no song info" check to top level
             } else {
-              mode = GoogleMusic.Playback.PAUSED;
+              mode = GMusic.Playback.PAUSED;
             }
           }
 
@@ -452,7 +476,7 @@ proto.hooks = {
         //   <div id="playerSongInfo" style=""></div>
         //   <paper-icon-button icon="remove-circle-outline" data-rating="0" role="button" tabindex="0" aria-disabled="false" class="x-scope paper-icon-button-0"></paper-icon-button>
         // jscs:enable maximumLineLength
-        if (target.dataset.rating !== undefined && target.hasAttribute('aria-label') &&
+        if (target.dataset && target.dataset.rating !== undefined && target.hasAttribute('aria-label') &&
             that.rating._isElSelected(target)) {
           that.emit('change:rating', target.dataset.rating);
         }
@@ -502,12 +526,12 @@ proto.hooks = {
 };
 
 // Expose selectors as a class property
-GoogleMusic.SELECTORS = SELECTORS;
+GMusic.SELECTORS = SELECTORS;
 
 // Export our constructor
-module.exports = GoogleMusic;
+module.exports = GMusic;
 
-},{"assert":3,"events":4,"inherits":9}],3:[function(require,module,exports){
+},{"assert":3,"events":4,"inherits":5}],3:[function(require,module,exports){
 // http://wiki.commonjs.org/wiki/Unit_Testing/1.0
 //
 // THIS IS NOT TESTED NOR LIKELY TO WORK OUTSIDE V8!
@@ -1233,6 +1257,7 @@ process.browser = true;
 process.env = {};
 process.argv = [];
 process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
 
 function noop() {}
 
@@ -1852,6 +1877,4 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":7,"_process":6,"inherits":5}],9:[function(require,module,exports){
-arguments[4][5][0].apply(exports,arguments)
-},{"dup":5}]},{},[1]);
+},{"./support/isBuffer":7,"_process":6,"inherits":5}]},{},[1]);

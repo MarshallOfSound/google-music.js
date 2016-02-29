@@ -9,6 +9,7 @@ var browserMusicUtils = require('./utils/browser-music');
 // Start our tests
 describe('A Google Music instance playing no music', function () {
   browserUtils.openMusic({
+    testName: 'Track info test',
     url: 'https://play.google.com/music/listen#/album//this-is-an-album-artist/this-is-an-album'
   });
 
@@ -19,12 +20,12 @@ describe('A Google Music instance playing no music', function () {
 
   describe('when we are playing music', function () {
     browserUtils.execute(function setupSongWatcher () {
-      window.googleMusic.on('change:song', function saveSong (song) {
+      window.gmusic.on('change:song', function saveSong (song) {
         window.song = song;
       });
     });
     browserUtils.execute(function playViaApi () {
-      window.googleMusic.playback.playPause();
+      window.gmusic.playback.playPause();
     });
     browserMusicUtils.waitForPlaybackStart();
     browserUtils.execute(function playViaApi () {

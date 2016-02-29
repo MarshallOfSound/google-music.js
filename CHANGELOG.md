@@ -1,4 +1,14 @@
-# google-music changelog
+# gmusic.js changelog
+4.0.4 - Corrected documentation of the `change:playback-time` event
+
+4.0.3 - Corrected license in package.json to SPDX
+
+4.0.2 - Documented release process
+
+4.0.1 - Removed branch whitelist from `.travis.yml`
+
+4.0.0 - Renamed repository from `google-music` to `gmusic.js`
+
 3.3.4 - Integrated Travis CI
 
 3.3.3 - Added missing `webdriver-manager-update` command/docs and added `npm run test-windows`
